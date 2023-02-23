@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    
+    <div id="root">
+
+   <div class="background-container">
+
+    <div class="main-container"> 
+
+            <!--left col-->
+            <div class="left-col">
+            <!--user main-->
+               <div class="user-main-container flex">
+                   <div class="user-img">
+                       <div class="flex">
+                           <div>
+                            <img src="img/avatar_io.jpg" alt="io">
+                           </div>
+
+                           <div class="bold">Nome Utente</div>
+                       </div>
+                   </div>
+
+                   <div>
+                     <div class="utilities flex">
+
+                        <div class="icon">
+                            <i class="fas fa-circle-notch"></i>
+                        </div>
+
+                        <div class="icon">
+                            <i class="fas fa-comment-alt"></i>
+                        </div>
+
+                        <div class="icon">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </div>
+
+                     </div>
+                   </div>   
+               </div>
+             <!--user main-->
+
+             <!--notification-->
+              <div class="notifications">
+                  <div class="flex">
+                      <div class="bell-icon">
+                        <i class="fas fa-bell-slash"></i>
+                      </div>
+                      <div>
+                         <div class="bold">Ricevi notifiche di nuovi messaggi</div>
+                         <div><a href="#">Attiva notifiche desktop</a></div>
+                      </div>
+                  </div>
+              </div>
+             <!--notification-->
+
+             <!--filter-->
+             <div class="filter">
+                <div class="flex">
+                    <label for="filtr"><i class="fas fa-search"></i></label>
+                    <input v-model="filterTextName" @keyup="userFilter" type="text" name="filter" id="filterbar" placeholder="Cerca o inizia una nuova chat"> 
+                </div>
+             </div>
+             <!--filter-->
+
+             <!--messagges-->
+                <div class="messages">
+                    <div class="user" v-for="(contact, index) in contacts" @click="selectUser(index)"  :class="{ 'active' : index == currentIndexAvatar}" v-if="contact.visible">
+                        <div class="flex">
+                            <div>
+                              <img :src="`img/avatar${contact.avatar}.jpg`" alt="io">
+                            </div>
+
+                            <div class="bold txt contactname">
+                                {{ contact.name }}
+
+                                <div> {{ getLastMessage(index) }} </div>
+                                <div class="lastdate">{{ getContactLastMessageDate(index) }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+             <!--messagges-->
+            </div>
+            <!--left col-->
+
+            <!--right col-->
+            <div class="right-col">
+
+                <!--user header-->
+                <div class="user-top-container-dx flex">
+                    <div class="user-img">
+                        <div class="flex">
+                            <div>
+                             <img :src="`img/avatar${contacts[currentIndexAvatar].avatar}.jpg`" :alt="contacts[currentIndexAvatar].name"> 
+                            </div>
+ 
+                            <div class="user_name bold"> {{ contacts[currentIndexAvatar].name }} <br>
+                            <span v-if="contacts[currentIndexAvatar].messages.length > 0">Ultimo accesso oggi alle {{ getContactLastMessageDate(currentIndexAvatar) }}</span>
+                            <span v-else>Online</span>
+                        </div>
+                        </div>
+                    </div>
+ 
+                    <div>
+                      <div class="utilities flex">
+ 
+                         <div class="icon">
+                            <i class="fas fa-search"></i>
+                         </div>
+ 
+                         <div class="icon">
+                            <i class="fas fa-share-square"></i>
+                         </div>
+ 
+                         <div class="icon">
+                            <i class="fas fa-ellipsis-v"></i>
+                         </div>
+ 
+                      </div>
+                    </div>   
+                </div>
+                <!--user header-->
+
+                <!--main messages container-->
+
+                <div class="messages-area">
+                    <div v-for="(message, index) in contacts[currentIndexAvatar].messages" class="mymessage">
+
+                        <div v-if="message.status == 'sent'" class="green-msg">
+                            {{ message.text }}
+                            
+                            <div class="date">{{ message.date }}</div>
+
+                            <div class="chevron" @click="menuDropdown(index)">
+                                <i class="fas fa-chevron-down"></i>
+                            </div> 
+
+                            <div v-if="index === activeMessage" class="delete-menu">
+                                <ul>
+                                    <li>Info Messaggio</li>
+                                    <li @click="deleteMessage(index)">Cancella Messagio</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div v-else class="friendmessage"> 
+                            {{ message.text }} 
+                            <div class="date">{{ message.date }}</div>
+
+                            <div class="chevron" @click="menuDropdown(index)">
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+
+                            <div v-if="index === activeMessage" class="delete-menu">
+                                <ul>
+                                    <li>Info Messaggio</li>
+                                    <li @click="deleteMessage(index)">Cancella Messagio</li>
+                                </ul>
+                            </div>
+                        </div> 
+                    </div>
+
+            </div>
+                <!--main messages container-->
+
+
+                <!--footer text messages container-->
+                <div class="text-messages-input flex">
+                    
+                        <div class="emoji">
+                            <i class="far fa-smile"></i>
+                        </div>
+
+                        <input v-model="newMessage" @keyup.enter="sendMessage" type="text"  placeholder="Scrivi un messaggio">
+
+                        <div class="vocal_icon">
+                            <i class="fas fa-microphone"></i>
+                        </div>
+                    
+                </div>
+                <!--footer text messages container-->
+            </div>
+            <!--right col-->
+    </div>
+
+        
+   </div>
+   </div>
+    
+
+    <script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
+    <script type="text/javascript" src="js/script.js" ></script>
+</body>
+</html>
